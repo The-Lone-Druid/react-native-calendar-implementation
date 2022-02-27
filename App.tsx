@@ -5,8 +5,7 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Calendar from './src/screens/Calendar';
 import Home from './src/screens/Home';
 import {
@@ -17,7 +16,7 @@ import {
   Provider as PaperProvider,
 } from 'react-native-paper';
 
-const Stack = createNativeStackNavigator();
+// const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -50,17 +49,6 @@ export default function App() {
             component={Calendar}
             options={({ route, navigation }) => ({
               headerTitle: 'Schedule',
-              headerRight: () => (
-                <Button
-                  mode={'contained'}
-                  icon={'plus'}
-                  color={Colors.black}
-                  style={{ marginRight: 20 }}
-                  onPress={() => console.log('pressed')}
-                >
-                  Add new
-                </Button>
-              ),
             })}
           />
         </Drawer.Navigator>
@@ -69,11 +57,11 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });

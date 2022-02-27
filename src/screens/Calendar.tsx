@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Card, Modal, Paragraph, Portal, Title } from 'react-native-paper';
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { Button, Card, Colors, Modal, Paragraph, Portal, Title } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
+import NewSchedule from '../components/NewSchedule';
 
-const Calendar = () => {
+const Calendar = ({ navigation }: any) => {
   const [items, setItems]: any = useState({
     '2021-02-01': [
       {
@@ -19,13 +20,30 @@ const Calendar = () => {
   const [visible, setVisible] = useState(false);
 
   const showModal = () => {
-    setVisible(() => true);
+      setVisible(() => true);
   }
 
   const hideModal = () => {
-    setVisible(() => false);
+      setVisible(() => false);
   }
-  const containerStyle = {backgroundColor: 'white', padding: 20, borderRadius: 10};
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          icon={'plus-circle-outline'}
+          color={Colors.black}
+          mode={'contained'}
+          style={{ marginRight: 20 }}
+          onPress={() => {
+            showModal();
+          }}
+        >
+          Add new
+        </Button>
+      ),
+    });
+  }, [navigation]);
 
   const renderItem = (item: any) => {
     return (
@@ -47,11 +65,13 @@ const Calendar = () => {
         selected={'2021-02-01'}
         renderItem={renderItem}
       />
-      <Portal>
-        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-          <Text>Can add new schedules from here.</Text>
-        </Modal>
-      </Portal>
+      {visible && (
+        <NewSchedule
+          visible={visible}
+          showModal={showModal}
+          hideModal={hideModal}
+        />
+      )}
     </View>
   )
 }
