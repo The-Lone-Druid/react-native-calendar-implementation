@@ -6,32 +6,35 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const NewSchedule = ({ visible, hideModal }: any) => {
-    const [date, setDate] = useState(new Date(1598051730000));
-    const [mode, setMode]: any = useState('date');
+const NewSchedule = ({ visible, hideModal, items, setItems }: any) => {
     const [show, setShow] = useState(false);
-    const [formDate, setFormDate] = useState('');
-    const [formTime, setTime] = useState('');
+    const [mode, setMode]: any = useState('date');
+    const [formDate, setFormDate]: any = useState();
+    const [formTime, setFormTime]: any = useState();
 
     const onChange = (event: any, selectedDate: any) => {
-        setShow(Platform.OS === 'ios');
-        setDate(selectedDate);
-        setFormDate(selectedDate);
-        console.log(formDate);
-        console.log(event);
+        if (mode === 'date') {
+            setShow(false);
+            if (selectedDate !== undefined) {
+                let currentDate = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1) < 10 ? '0' + (selectedDate.getMonth() + 1) : selectedDate.getMonth() + 1}-${selectedDate.getDate() < 10 ? '0' + selectedDate.getDate() : selectedDate.getDate()}`;
+                setFormDate(currentDate);
+            } else {
+                setFormDate('');
+            }
+        } else if (mode === 'time') {
+            setShow(false);
+            if (selectedDate !== undefined) {
+                let currentTime = `${selectedDate.getHours() < 10 ? '0' + selectedDate.getHours() : selectedDate.getHours()}:${selectedDate.getMinutes() < 10 ? '0' + selectedDate.getMinutes() : selectedDate.getMinutes()}`;
+                setFormTime(currentTime);
+            } else {
+                setFormTime('');
+            }
+        }
     };
 
-    const showMode = (currentMode: any) => {
+    const showMode = (pickerMode: any) => {
         setShow(true);
-        setMode(currentMode);
-    };
-
-    const showDatepicker = () => {
-        showMode('date');
-    };
-
-    const showTimepicker = () => {
-        showMode('time');
+        setMode(pickerMode);
     };
 
     const containerStyle = { backgroundColor: 'white', padding: 20, borderRadius: 10, marginHorizontal: 20 };
@@ -43,11 +46,22 @@ const NewSchedule = ({ visible, hideModal }: any) => {
                     initialValues={{
                         scheduleTitle: '',
                         scheduleDesc: '',
-                        scheduleTime: '',
-                        scheduleDate: ''
                     }}
                     onSubmit={(values) => {
-                        console.log(values);
+                        setItems((prevItems: any) => {
+                            return {
+                                ...prevItems,
+                                [formDate.toString()]: [
+                                    {
+                                        name: values.scheduleTitle,
+                                        content: values.scheduleDesc,
+                                        date: formDate,
+                                    }
+                                ]
+                            }
+                        })
+                        console.log(items);
+                        hideModal();
                     }}
                 >
                     {(formikProps) => (
@@ -61,9 +75,9 @@ const NewSchedule = ({ visible, hideModal }: any) => {
                                     marginTop: 10,
                                     backgroundColor: 'white',
                                 }}
-                                label="Schedule Title"
+                                label="Title"
                                 value={formikProps.values.scheduleTitle}
-                                placeholder="Schedule Title"
+                                placeholder="Title"
                                 onChangeText={formikProps.handleChange('scheduleTitle')}
                                 autoComplete
                                 mode="outlined"
@@ -81,6 +95,31 @@ const NewSchedule = ({ visible, hideModal }: any) => {
                                 autoComplete
                                 mode="outlined"
                             />
+                            {/* Schedule Date input */}
+                            <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginTop: 10,
+                            }}>
+                                <TextInput
+                                    style={{
+                                        backgroundColor: 'white',
+                                        marginRight: 10,
+                                        width: '85%'
+                                    }}
+                                    label="Schedule"
+                                    value={formDate}
+                                    placeholder="Schedule"
+                                    autoComplete
+                                    mode="outlined"
+                                    disabled
+                                />
+                                <TouchableOpacity
+                                    onPress={() => showMode('date')}
+                                >
+                                    <MaterialIcons name="date-range" size={26} color={Colors.blue500} />
+                                </TouchableOpacity>
+                            </View>
                             {/* Schedule Time input */}
                             <View style={{
                                 flexDirection: 'row',
@@ -94,43 +133,16 @@ const NewSchedule = ({ visible, hideModal }: any) => {
                                         width: '85%'
                                     }}
                                     label="Schedule Time"
-                                    value={formikProps.values.scheduleTime}
+                                    value={formTime}
                                     placeholder="Schedule Time"
-                                    onChangeText={formikProps.handleChange('scheduleTime')}
                                     autoComplete
                                     mode="outlined"
                                     disabled
                                 />
                                 <TouchableOpacity
-                                    onPress={showTimepicker}
+                                    onPress={() => showMode('time')}
                                 >
-                                    <AntDesign name="clockcircleo" size={24} color="black" />
-                                </TouchableOpacity>
-                            </View>
-                            {/* Schedule Date input */}
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                marginTop: 10,
-                            }}>
-                                <TextInput
-                                    style={{
-                                        backgroundColor: 'white',
-                                        marginRight: 10,
-                                        width: '85%'
-                                    }}
-                                    label="Schedule Date"
-                                    value={formikProps.values.scheduleDate}
-                                    placeholder="Schedule Date"
-                                    onChangeText={formikProps.handleChange('scheduleDate')}
-                                    autoComplete
-                                    mode="outlined"
-                                    disabled
-                                />
-                                <TouchableOpacity
-                                    onPress={showDatepicker}
-                                >
-                                    <MaterialIcons name="date-range" size={26} color="black" />
+                                    <AntDesign name="clockcircleo" size={24} color={Colors.blue500} />
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -157,7 +169,7 @@ const NewSchedule = ({ visible, hideModal }: any) => {
                 {show && (
                     <DateTimePicker
                         testID="dateTimePicker"
-                        value={date}
+                        value={new Date()}
                         mode={mode}
                         is24Hour={false}
                         display="default"

@@ -6,7 +6,7 @@ import NewSchedule from '../components/NewSchedule';
 
 const Calendar = ({ navigation }: any) => {
   const [items, setItems]: any = useState({
-    '2021-02-01': [
+    '2022-02-28': [
       {
         name: 'Hello there buddy',
         content: 'This is a very content for the paragraph or any other area bruh!'
@@ -18,13 +18,15 @@ const Calendar = ({ navigation }: any) => {
     ],
   });
   const [visible, setVisible] = useState(false);
+  const [currentDay, setCurrentDay] = useState(new Date())
+  const [selectedDay, setSelectedDay] = useState(currentDay.getFullYear() + '-' + (currentDay.getMonth() < 10 ? '0' + (currentDay.getMonth() + 1) : (currentDay.getMonth() + 1)) + '-' + (currentDay.getDate() < 10 ? '0' + currentDay.getDate() : currentDay.getDate()))
 
   const showModal = () => {
-      setVisible(() => true);
+    setVisible(() => true);
   }
 
   const hideModal = () => {
-      setVisible(() => false);
+    setVisible(() => false);
   }
 
   useLayoutEffect(() => {
@@ -58,18 +60,31 @@ const Calendar = ({ navigation }: any) => {
     )
   }
 
+  const renderEmptyDate = () => {
+    return (
+      <Card style={{ marginTop: 30, marginRight: 20 }}>
+        <Card.Content>
+          <Title>No Schedules today.</Title>
+        </Card.Content>
+      </Card>
+    );
+  }
+
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Agenda
         items={items}
-        selected={'2021-02-01'}
+        selected={selectedDay}
         renderItem={renderItem}
+        renderEmptyDate={renderEmptyDate}
       />
       {visible && (
         <NewSchedule
           visible={visible}
           showModal={showModal}
           hideModal={hideModal}
+          items={items}
+          setItems={setItems}
         />
       )}
     </View>
